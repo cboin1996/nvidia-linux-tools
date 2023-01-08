@@ -25,6 +25,13 @@ finalize:
 	sudo bash -c "echo options nvidia_drm modeset=1 > /etc/modprobe.d/nvidia-kms.conf"
 	sudo bash -c "echo options nvidia-drm modeset=0 > /lib/modprobe.d/nvidia-kms.conf"
 	sudo update-initramfs -u
+
+headers:
+	sudo apt install --reinstall linux-image-generic
+	sudo apt remove --purge linux-headers-generic
+	sudo apt remove --purge linux-headers-$(uname -r)
+	sudo apt autoremove
+	sudo apt install linux-headers-generic
 # used to have to run configure post finalize, but that doesnt seem to be the case anymore.
 # configure:
 # 	sudo nvidia-xconfig
