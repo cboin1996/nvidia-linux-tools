@@ -1,11 +1,6 @@
-# To use, run 
-# 1. clean
-# 2. sudo reboot now
-# 3. prepare
-# 4. finalize
-# 5. sudo reboot now
-#
-# File taken from : https://forums.developer.nvidia.com/t/nvidia-driver-does-not-load-on-ubuntu-21-04-with-geforce-rtx-3060/187554/4
+# File inspired from : https://forums.developer.nvidia.com/t/nvidia-driver-does-not-load-on-ubuntu-21-04-with-geforce-rtx-3060/187554/4
+
+all: clean prepare headers
 
 clean:
 	sudo apt remove --purge '^nvidia-.*'
@@ -17,21 +12,23 @@ clean:
 	sudo rm /etc/modprobe.d/nvidia-kms.conf | true
 	sudo rm /lib/modprobe.d/nvidia-kms.conf | true
 	echo "run 'grep blacklist /etc/modprobe.d/* /lib/modprobe.d/* | grep nvidia' and delete any files"
+
 prepare:
 	sudo apt update -y && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt clean -y && sudo apt autoclean -y
 	echo "install the recommended driver through the additional drivers ubuntu app"
 
+headers:
+	sudo apt remove --purge linux-headers-$(uname -r)
+	sudo apt install linux-headers-$(uname -r)
+	sudo apt install linux-image-generic
+	sudo apt install linux-headers-generic
+
+# finalize is not used anymore, more of a 20.04 thing.
 finalize:
 	sudo bash -c "echo options nvidia_drm modeset=1 > /etc/modprobe.d/nvidia-kms.conf"
 	sudo bash -c "echo options nvidia-drm modeset=0 > /lib/modprobe.d/nvidia-kms.conf"
 	sudo update-initramfs -u
 
-headers:
-	sudo apt install --reinstall linux-image-generic
-	sudo apt remove --purge linux-headers-generic
-	sudo apt remove --purge linux-headers-$(uname -r)
-	sudo apt autoremove
-	sudo apt install linux-headers-generic
 # used to have to run configure post finalize, but that doesnt seem to be the case anymore.
 # configure:
 # 	sudo nvidia-xconfig
